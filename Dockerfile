@@ -14,13 +14,16 @@ WORKDIR /var/www/html
 # Copiar primero composer.json y composer.lock para aprovechar la caché de Docker
 COPY composer.json composer.lock /var/www/html/
 
-# Instalar dependencias de Laravel
-RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader
+# Copiar .env.example como .env para evitar errores en composer install
+COPY .env.example /var/www/html/.env
 
-# Copiar todo el contenido de laravel_hosting al contenedor
+# Instalar dependencias de Laravel SIN ejecutar scripts
+RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader --no-scripts
+
+# Copiar todo el proyecto
 COPY . /var/www/html/
 
-# Dar permisos a la carpeta de almacenamiento y cache
+# Dar permisos a carpetas necesarias
 RUN chmod -R 777 storage bootstrap/cache
 
 # Crear archivo database.sqlite si no existe y dar permisos
@@ -40,8 +43,8 @@ RUN echo '<VirtualHost *:80>' > /etc/apache2/sites-available/000-default.conf \
 # Habilitar mod_rewrite y headers en Apache
 RUN a2enmod rewrite headers
 
-# Exponer el puerto de Apache
+# Exponer el puerto 80
 EXPOSE 80
 
-# Comando de inicio
-CMD ["apache2-foreground"]
+# Comando de inicio: optimizar y migrar, luego levantar Apache
+CMD php artisan optimize && php artisan migrate --force && apache2-foreground
