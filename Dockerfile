@@ -47,4 +47,8 @@ RUN a2enmod rewrite headers
 EXPOSE 80
 
 # Comando de inicio
-CMD php artisan key:generate --force && php artisan optimize && php artisan migrate --force && apache2-foreground
+CMD php artisan key:generate --force && \
+    php artisan optimize && \
+    php artisan migrate --force && \
+    php artisan db:seed --force && \
+    apache2-foreground
