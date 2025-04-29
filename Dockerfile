@@ -46,9 +46,14 @@ RUN a2enmod rewrite headers
 # Exponer el puerto 80
 EXPOSE 80
 
+# Copiar el script de entrada
+COPY entrypoint.sh /entrypoint.sh
+
+# Dar permisos al script de entrada
+RUN chmod +x /entrypoint.sh
+
+# Establecer el script de entrada
+ENTRYPOINT ["/entrypoint.sh"]
+
 # Comando de inicio
-CMD php artisan key:generate --force && \
-    php artisan optimize && \
-    php artisan migrate --force && \
-    php artisan db:seed --force && \
-    apache2-foreground
+CMD ["apache2-foreground"]
