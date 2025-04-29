@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Esperar a que la base de datos esté lista (puede ser útil si tienes una base de datos externa)
-# sleep 10
+# Esperar a que la base de datos esté lista (si fuera necesario)
+sleep 10  # Espera 10 segundos antes de continuar
 
 # Generar la clave de la aplicación
 php artisan key:generate --force
